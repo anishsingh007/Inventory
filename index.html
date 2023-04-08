@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form>
+    <label>Item Name</label>
+    <input type="Item Name" name="itemName" required />
+    <label>Description</label>
+    <input type="description" name="description" required />
+    <label>Price</label>
+    <input type="price" name="price" required />
+    <label>Quantity</label>
+    <input type="quantity" name="quantity" required />
+    <button type="submit">AddItem</button>
+  </form>
+  <ul id="listOfItems"></ul>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.5/axios.min.js"></script> 
+  <script>
+
+    const form = document.querySelector('form');
+    const parentElem = document.getElementById("listOfItems");
+
+    form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const item = form.itemName.value;
+  const desc = form.description.value;
+  const price = form.price.value;
+  const qty = form.quantity.value;
+  const obj = {
+    item,
+    desc,
+    price,
+    qty,
+  }
+  const id = form.dataset.id; // get the user id from dataset
+  if (id) {
+    // send PUT request to update user details
+    axios.put("https://crudcrud.com/api/f17ea8ead123454a81c2cee234134ad0/groceryData/" + id, obj)
+    .then((response) => {
+      console.log(response);
+      showUserOnScreen(obj);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    form.dataset.id = ""; // clear the dataset id
+  } else {
+    // send POST request to create new user
+    axios.post("https://crudcrud.com/api/f17ea8ead123454a81c2cee234134ad0/groceryData/", obj)
+    .then((response)=>{
+      console.log(response);
+      obj._id = response.data._id;
+      showUserOnScreen(obj);
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+  }
+       
+      form.reset();
+    });
+
+    function showUserOnScreen(obj){
+   
+  const childElem = document.createElement('li');
+  const buy1Btn = document.createElement('button');
+  const buy2Btn = document.createElement('button');
+  const buy3Btn = document.createElement('button'); // add edit button
+  buy1Btn.innerHTML = "Buy1";
+  buy2Btn.innerHTML = "Buy2";
+  buy3Btn.innerHTML = "Buy3"; // set text for edit button
+  buy1Btn.addEventListener('click', () => {
+    const updatedQty = obj.qty - 1;
+    axios.put("https://crudcrud.com/api/f17ea8ead123454a81c2cee234134ad0/groceryData/" + obj._id, {...obj, qty: updatedQty})
+    .then((response) => {
+      obj.qty = updatedQty;
+      childElem.textContent = obj.item + ' - ' + obj.desc + ' - ' + obj.price + ' - ' + obj.qty;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  });
+  buy2Btn.addEventListener('click', () => {
+    const updatedQty = obj.qty - 1;
+   
+    axios.put("https://crudcrud.com/api/f17ea8ead123454a81c2cee234134ad0/groceryData/" + id, obj)
+    .then((response) => {
+      console.log(response);
+      showUserOnScreen(obj);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  });
+  buy3Btn.addEventListener('click', () => {
+    const updatedQty = obj.qty - 1;
+    axios.put("https://crudcrud.com/api/f17ea8ead123454a81c2cee234134ad0/groceryData/" + obj._id, {...obj, qty: updatedQty})
+    .then((response) => {
+      obj.qty = updatedQty;
+      childElem.textContent = obj.item + ' - ' + obj.desc + ' - ' + obj.price + ' - ' + obj.qty;
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+  });
+  childElem.textContent = obj.item + ' - ' + obj.desc + ' - ' + obj.price + ' - ' + obj.qty;
+  childElem.appendChild(buy1Btn); // add edit button to the list item
+  childElem.appendChild(buy2Btn);
+  childElem.appendChild(buy3Btn);
+  parentElem.appendChild(childElem);
+}
+    
+
+  
+
+  </script>  
+</body>
+</html>
